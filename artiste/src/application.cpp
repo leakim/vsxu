@@ -191,7 +191,7 @@ public:
       }
       if (!dual_monitor)
       {
-        vxe->process_message_queue(&internal_cmd_in,&internal_cmd_out);
+        vxe->process_message_queue(&internal_cmd_in,&internal_cmd_out,false,false,1.0f);
       }
 
       if (*gui_prod_fullwindow)

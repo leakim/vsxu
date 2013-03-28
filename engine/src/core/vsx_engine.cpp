@@ -667,6 +667,12 @@ void vsx_engine::process_message_queue(vsx_command_list *cmd_in, vsx_command_lis
   {
     c = commands_internal.pop();
     if (!c) break;
+    if (c->cmd == "break")
+    {
+      (*(c->garbage_pointer)).remove(c);
+      delete c;
+      return;
+    }
     //LOG3(vsx_string("cmd_in: ")+c->cmd+" ::: "+c->raw);
     //printf("%s\n", vsx_string(vsx_string("cmd_in: ")+c->cmd+" ::: "+c->raw).c_str());
     //printf("c type %d\n",c->type);

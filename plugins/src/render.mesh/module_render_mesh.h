@@ -280,8 +280,8 @@ class vsx_module_render_mesh : public vsx_module
 
   inline bool maintain_vbo_type(GLuint draw_type = GL_DYNAMIC_DRAW_ARB)
   {
-    if (!check_if_need_to_reinit_vbo(draw_type)) return;
-    //printf("re-initializing the VBO!\n");
+    if (!check_if_need_to_reinit_vbo(draw_type)) return true;
+    printf("re-initializing the VBO!\n");
     destroy_vbo();
     return init_vbo(draw_type);
   }
@@ -533,6 +533,7 @@ public:
 
   void inline perform_draw()
   {
+    printf("drawing\n");
     //glDrawElements(GL_TRIANGLES,(*mesh)->data->faces.get_used()*3,GL_UNSIGNED_INT,(*mesh)->data->faces.get_pointer());
     //size_t face_count = (*mesh)->data->faces.get_used();
     glDrawElements(GL_TRIANGLES,(*mesh)->data->faces.get_used()*3,GL_UNSIGNED_INT,0);
@@ -657,16 +658,20 @@ public:
     output_opengl_es(param); return;
     #endif
     GLuint gl_error = glGetError();
+    printf("output %d\n", __LINE__);
     if (!mesh_in->valid) return;
     mesh = mesh_in->get_addr();
+    printf("output %d\n", __LINE__);
     // sanity checks
     if (!mesh) { message="module||Can not render: mesh is not set"; render_result->set(0); return; }
     if (!(*mesh)->data) { message="module||Can not render: Mesh data is not set"; render_result->set(0); return; }
     if (!(*mesh)->data->faces.get_used()) { message="module||Can not render: Mesh has no faces"; render_result->set(0); return; }
     message="module||ok";
+    printf("output %d\n", __LINE__);
 
     HANDLE_GL_ERROR;
 
+    printf("output %d\n", __LINE__);
     if (use_display_list->get())
     {
       // make sure vbo is set to static draw
@@ -680,10 +685,12 @@ public:
       printf("error in mesh renderer, exiting...\n");
       return;
     }
+    printf("output %d\n", __LINE__);
 
     enable_texture();
 
     if (vertex_colors->get()) glEnable(GL_COLOR_MATERIAL);
+    printf("output %d\n", __LINE__);
 
 
     particle_mesh = particle_cloud->get_addr();
@@ -708,6 +715,7 @@ public:
       return;
     }
 
+    printf("output %d\n", __LINE__);
 
     particles = particles_in->get_addr();
     if (particles)
@@ -770,6 +778,7 @@ public:
     }
 
     if (!enable_client_arrays_vbo()) return;
+    printf("output %d\n", __LINE__);
 
     if (gl_errors.size() > 0)
     {
@@ -777,8 +786,11 @@ public:
       return;
     }
     //enable_client_arrays_no_vbo();
+    printf("output %d\n", __LINE__);
     perform_draw();
+    printf("output %d\n", __LINE__);
     cleanup_successful_rendering();
+    printf("output %d\n", __LINE__);
   }
 
   void stop() {
