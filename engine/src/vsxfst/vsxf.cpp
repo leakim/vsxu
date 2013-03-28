@@ -385,7 +385,12 @@ bool vsxf::is_archive_populated()
       //printf("size aquired: %d\n",read_size);
       buf[size] = 0;
       return buf;
-    } else return 0;
+    } else
+    {
+      printf("error opening file!\n");
+      exit(0);
+      return 0;
+    }
   }
 
   char* vsxf::f_gets(char* buf, unsigned long max_buf_size, vsxf_handle* handle) {

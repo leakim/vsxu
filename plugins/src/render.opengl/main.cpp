@@ -596,6 +596,30 @@ public:
 	void declare_params(vsx_module_param_list& in_parameters, vsx_module_param_list& out_parameters)
 	{
 	  loading_done = true;
+    // initialize memory to make valgrind happy
+    ambient[0] = 0.0f;
+    ambient[1] = 0.0f;
+    ambient[2] = 0.0f;
+    ambient[3] = 0.0f;
+
+    diffuse[0] = 0.0f;
+    diffuse[1] = 0.0f;
+    diffuse[2] = 0.0f;
+    diffuse[3] = 0.0f;
+
+    specular[0] = 0.0f;
+    specular[1] = 0.0f;
+    specular[2] = 0.0f;
+    specular[3] = 0.0f;
+
+    emission[0] = 0.0f;
+    emission[1] = 0.0f;
+    emission[2] = 0.0f;
+    emission[3] = 0.0f;
+
+    spec_exp = 0.0f;
+
+
 		render_in = (vsx_module_param_render*)in_parameters.create(VSX_MODULE_PARAM_ID_RENDER,"render_in");
 	  faces_affected = (vsx_module_param_int*)in_parameters.create(VSX_MODULE_PARAM_ID_INT,"faces_affected");
 	  faces_affected->set(2);
@@ -624,12 +648,14 @@ public:
 	  emission_intensity->set(1.0f,3);
 
 	  specular_exponent = (vsx_module_param_float*)in_parameters.create(VSX_MODULE_PARAM_ID_FLOAT,"specular_exponent");
+    specular_exponent->set(0.0f);
 
 		render_result = (vsx_module_param_render*)out_parameters.create(VSX_MODULE_PARAM_ID_RENDER,"render_out");
 	}
 
 
-	bool activate_offscreen() {
+  bool activate_offscreen()
+  {
 	  unsigned int ff = faces_list[faces_affected->get()];
 		//GLfloat ambient[4];
 		//GLfloat diffuse[4];
@@ -642,10 +668,6 @@ public:
 		glGetMaterialfv(ff,GL_EMISSION,&emission[0]);
 		glGetMaterialfv(ff,GL_SHININESS,&spec_exp);
 
-	  /*mm[0] = value->get(0);
-	  mm[1] = value->get(1);
-	  mm[2] = value->get(2);
-	  mm[3] = value->get(3);*/
 	  glMaterialfv(ff,GL_AMBIENT,ambient_reflectance->get_addr());
 	  glMaterialfv(ff,GL_DIFFUSE,diffuse_reflectance->get_addr());
 	  glMaterialfv(ff,GL_SPECULAR,specular_reflectance->get_addr());
@@ -654,7 +676,8 @@ public:
 	  return true;
 	}
 
-	void deactivate_offscreen() {
+  void deactivate_offscreen()
+  {
 	  unsigned int ff = faces_list[faces_affected->get()];
 	  glMaterialfv(ff,GL_AMBIENT		,&ambient[0]);
 	  glMaterialfv(ff,GL_DIFFUSE		,&diffuse[0]);

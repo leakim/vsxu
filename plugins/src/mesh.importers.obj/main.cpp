@@ -288,6 +288,7 @@ void run() {
     engine->filesystem->f_close(fp);
     loading_done = true;
     mesh->timestamp = (int)(engine->real_vtime*1000.0f);
+    printf("mesh timestamp: %d\n", (int)mesh->timestamp);
     #ifdef VSXU_DEBUG
       printf("mesh timestamp: %d\n", (int)mesh->timestamp);
     #endif

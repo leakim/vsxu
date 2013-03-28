@@ -625,7 +625,7 @@ void vsx_engine::set_ignore_per_frame_time_limit(bool new_value)
 }
 
 //############## M E S S A G E   P R O C E S S O R #################################################
-void vsx_engine::process_message_queue(vsx_command_list *cmd_in, vsx_command_list *cmd_out_res, bool exclusive, bool ignore_timing)
+void vsx_engine::process_message_queue(vsx_command_list *cmd_in, vsx_command_list *cmd_out_res, bool exclusive, bool ignore_timing, float max_time)
 {
   if (!valid) return;
   // service commands
@@ -661,7 +661,9 @@ void vsx_engine::process_message_queue(vsx_command_list *cmd_in, vsx_command_lis
 
   vsx_command_list* cmd_out = cmd_out_res;
 
-  while (total_time < 0.01 || ignore_timing)
+  printf("max time: %f\n", max_time);
+  //while (total_time < 0.01 || ignore_timing)
+  while (total_time < max_time || ignore_timing)
   {
     c = commands_internal.pop();
     if (!c) break;
