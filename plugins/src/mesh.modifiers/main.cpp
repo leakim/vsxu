@@ -59,7 +59,7 @@
 // TODO: add a real spheremapping module
 // TODO: quaternion rotation from 2 vertex id's: vector from point to point, normal, crossproduct = matrix -> quaternion
 // global static empty mesh
-vsx_mesh mesh_empty;
+//vsx_mesh mesh_empty;
 
 class vsx_module_mesh_dummy : public vsx_module
 {
@@ -551,9 +551,6 @@ public:
     vsx_mesh** p = mesh_in->get_addr();
     if (!p) 
     {
-      mesh_empty.timestamp = (int)(engine->real_vtime*1000.0f);
-      mesh_out->set(&mesh_empty);
-      prev_timestamp = 0xFFFFFFFF;
       return;
     }   
     
@@ -911,6 +908,7 @@ public:
     mesh_in = (vsx_module_param_mesh*)in_parameters.create(VSX_MODULE_PARAM_ID_MESH,"mesh_in");
     loading_done = true;
     mesh_out = (vsx_module_param_mesh*)out_parameters.create(VSX_MODULE_PARAM_ID_MESH,"mesh_out");
+    prev_timestamp = 0xFFFFFFFF;
   }
 
   unsigned long prev_timestamp;
@@ -919,9 +917,6 @@ public:
     vsx_mesh** p = mesh_in->get_addr();
     if (!p)
     {
-      mesh_empty.timestamp = (int)(engine->real_vtime*1000.0f);
-      mesh_out->set(&mesh_empty);
-      prev_timestamp = 0xFFFFFFFF;
       return;
     }
 
@@ -1319,15 +1314,13 @@ public:
     prev_start = -1.0f;
     loading_done = true;
     mesh_out = (vsx_module_param_mesh*)out_parameters.create(VSX_MODULE_PARAM_ID_MESH,"mesh_out");
+    prev_timestamp = 0xFFFFFFFF;
   }
 
   void run() {
     vsx_mesh** p = mesh_in->get_addr();
     if (!p) 
     {
-      mesh_empty.timestamp = (int)(engine->real_vtime*1000.0f);
-      mesh_out->set(&mesh_empty);
-      prev_timestamp = 0xFFFFFFFF;
       return;
     }   
     if (((start->get() > 0.0f))) {
@@ -1462,6 +1455,9 @@ class vsx_module_mesh_deformers_random_normal_distort : public vsx_module {
   // internal
   vsx_mesh* mesh;
   vsx_array<vsx_vector> normals_dist_array;
+  unsigned long int prev_timestamp;
+  vsx_vector v, v_;
+  float vertex_distortion_factor_;
 
 public:
   bool init() {
@@ -1501,17 +1497,12 @@ public:
     vertex_distortion_factor->set(1.0f);
     mesh_out = (vsx_module_param_mesh*)out_parameters.create(VSX_MODULE_PARAM_ID_MESH,"mesh_out");
     prev_timestamp = 0xFFFFFFFF;
+    vertex_distortion_factor_ = 0.0f;
   }
-  unsigned long int prev_timestamp;
-  vsx_vector v, v_;
-  float vertex_distortion_factor_;
   void run() {
     vsx_mesh** p = mesh_in->get_addr();
     if (!p) 
     {
-      mesh_empty.timestamp = (int)(engine->real_vtime*1000.0f);
-      mesh_out->set(&mesh_empty);
-      prev_timestamp = 0xFFFFFFFF;
       return;
     }
     if (p && (param_updates || prev_timestamp != (*p)->timestamp)) {
@@ -2134,9 +2125,6 @@ public:
     vsx_mesh** p = mesh_in->get_addr();
     if (!p) 
     {
-      mesh_empty.timestamp = (int)(engine->real_vtime*1000.0f);
-      mesh_out->set(&mesh_empty);
-      prev_timestamp = 0xFFFFFFFF;
       return;
     }
 
@@ -2623,6 +2611,7 @@ public:
     area = (vsx_module_param_float3*)in_parameters.create(VSX_MODULE_PARAM_ID_FLOAT3, "area");
     loading_done = true;
     mesh_out = (vsx_module_param_mesh*)out_parameters.create(VSX_MODULE_PARAM_ID_MESH,"mesh_out");
+    prev_timestamp = 0xFFFFFFFF;
   }
 
   unsigned long prev_timestamp;
@@ -2630,9 +2619,6 @@ public:
     vsx_mesh** p = mesh_in->get_addr();
     if (!p)
     {
-      mesh_empty.timestamp = (int)(engine->real_vtime*1000.0f);
-      mesh_out->set(&mesh_empty);
-      prev_timestamp = 0xFFFFFFFF;
       return;
     }
 

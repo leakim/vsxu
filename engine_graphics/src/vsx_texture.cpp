@@ -903,7 +903,8 @@ void vsx_texture::texcoord2f(float x, float y) {
 
 void vsx_texture::unload()
 {
-  if (texture_info.ogl_id != 0)	{
+  if (texture_info.ogl_id != 0)
+  {
     if (name != "" && t_glist.find(name) != t_glist.end())
     {
       if (!locked)

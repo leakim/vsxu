@@ -661,6 +661,9 @@ void vsx_engine::process_message_queue(vsx_command_list *cmd_in, vsx_command_lis
 
   vsx_command_list* cmd_out = cmd_out_res;
 
+  //#ifdef VSXU_DEBUG
+  max_time = 120.0f;
+  //#endif
   printf("max time: %f\n", max_time);
   //while (total_time < 0.01 || ignore_timing)
   while (total_time < max_time || ignore_timing)

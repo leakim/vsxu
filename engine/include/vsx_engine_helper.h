@@ -29,9 +29,9 @@ public:
     delete engine;
   }
 
-  void render(float max_time = 0.01f)
+  void render(float max_time = 120.0f)
   {
-    engine->process_message_queue( &cmd_in, &cmd_out, false, false , max_time);
+    engine->process_message_queue( &cmd_in, &cmd_out, false, false , 120.0f);
     cmd_out.clear(true);
     engine->render();
   }

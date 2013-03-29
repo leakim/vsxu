@@ -43,8 +43,6 @@ class vsx_module_render_mesh : public vsx_module
   vsx_particlesystem* particles;
   vsx_matrix ma;
 
-  GLuint dlist;
-  bool list_built;
   unsigned long prev_mesh_timestamp;
 
   // vbo index offsets
@@ -101,7 +99,7 @@ class vsx_module_render_mesh : public vsx_module
     }
   }
 
-  inline bool init_vbo(GLuint draw_type = GL_DYNAMIC_DRAW_ARB)
+  bool init_vbo(GLuint draw_type = GL_DYNAMIC_DRAW_ARB)
   {
     if (vbo_id_vertex_normals_texcoords) {
       printf("init vbo failed - vbo_id_vertex_normals_texcoords already has a value: %d\n", vbo_id_vertex_normals_texcoords);
@@ -125,7 +123,8 @@ class vsx_module_render_mesh : public vsx_module
         1,
         &vbo_id_vertex_normals_texcoords
       );
-      /*if (!HANDLE_GL_ERROR) {
+      /*if (!HANDLE_GL_ERROR)
+      {
         vbo_id_vertex_normals_texcoords = 0;
         return false;
       }*/
@@ -174,7 +173,7 @@ class vsx_module_render_mesh : public vsx_module
       );
       HANDLE_GL_ERROR;
       offset += (*mesh)->data->vertex_normals.get_sizeof();
-      //printf("offset after vertex normals: %d\n", offset);
+      printf("offset after vertex normals: %d\n", offset);
     }
 
     // 2: texture coordinates -----------------------------------------------
@@ -190,7 +189,7 @@ class vsx_module_render_mesh : public vsx_module
       );
       HANDLE_GL_ERROR;
       offset += (*mesh)->data->vertex_tex_coords.get_sizeof();
-      //printf("offset after texcoords: %d\n", offset);
+      printf("offset after texcoords: %d\n", offset);
     }
 
     // 3: optional: vertex color coordinates -----------------------------------------------
@@ -206,7 +205,7 @@ class vsx_module_render_mesh : public vsx_module
       );
       HANDLE_GL_ERROR;
       offset += (*mesh)->data->vertex_colors.get_sizeof();
-      //printf("offset after vertex colors: %d\n", offset);
+      printf("offset after vertex colors: %d\n", offset);
     }
 
     // 4: vertices ----------------------------------------------------------
@@ -221,14 +220,14 @@ class vsx_module_render_mesh : public vsx_module
     HANDLE_GL_ERROR;
     offset += (*mesh)->data->vertices.get_sizeof();
     current_num_vertices = (*mesh)->data->vertices.size();
-    //printf("offset after vertices: %d\n", offset);
+    printf("offset after vertices: %d\n", offset);
 
     //-----------------------------------------------------------------------
 
     int bufferSize;
     glGetBufferParameterivARB(GL_ARRAY_BUFFER_ARB, GL_BUFFER_SIZE_ARB, &bufferSize);
     HANDLE_GL_ERROR;
-    //printf("vertex and normal array in vbo: %d bytes\n", bufferSize);
+    printf("vertex and normal array in vbo: %d bytes\n", bufferSize);
 
     // unbind the array buffer
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -236,6 +235,12 @@ class vsx_module_render_mesh : public vsx_module
 
     // create VBO for index array
     // Target of this VBO is GL_ELEMENT_ARRAY_BUFFER_ARB and usage is GL_STATIC_DRAW_ARB
+    /*for (size_t fi = 0; fi < (*mesh)->data->faces.size(); fi++ )
+    {
+      (*mesh)->data->faces[fi].a = 0;
+      (*mesh)->data->faces[fi].b = 1;
+      (*mesh)->data->faces[fi].c = 2;
+    }*/
     create_vbo
     (
       vbo_id_draw_indices,
@@ -248,7 +253,7 @@ class vsx_module_render_mesh : public vsx_module
 
     glGetBufferParameterivARB(GL_ELEMENT_ARRAY_BUFFER_ARB, GL_BUFFER_SIZE_ARB, &bufferSize);
     HANDLE_GL_ERROR;
-    //printf("index array in vbo: %d bytes\n", bufferSize);
+    printf("index array in vbo: %d bytes\n", bufferSize);
     //used_memory += bufferSize;
     //printf("total VBO memory used: %d bytes\n", used_memory);
     current_num_faces = (*mesh)->data->faces.size();
@@ -256,7 +261,7 @@ class vsx_module_render_mesh : public vsx_module
     HANDLE_GL_ERROR;
   }
 
-  inline void destroy_vbo()
+  void destroy_vbo()
   {
     if (!vbo_id_vertex_normals_texcoords) return;
     glDeleteBuffersARB(1, &vbo_id_draw_indices);
@@ -269,7 +274,7 @@ class vsx_module_render_mesh : public vsx_module
   }
 
 
-  inline bool check_if_need_to_reinit_vbo(GLuint draw_type)
+  bool check_if_need_to_reinit_vbo(GLuint draw_type)
   {
     if (!vbo_id_vertex_normals_texcoords) return true;
     if (current_num_vertices != (*mesh)->data->vertices.size() ) return true;
@@ -278,7 +283,7 @@ class vsx_module_render_mesh : public vsx_module
     return false;
   }
 
-  inline bool maintain_vbo_type(GLuint draw_type = GL_DYNAMIC_DRAW_ARB)
+  bool maintain_vbo_type(GLuint draw_type = GL_DYNAMIC_DRAW_ARB)
   {
     if (!check_if_need_to_reinit_vbo(draw_type)) return true;
     printf("re-initializing the VBO!\n");
@@ -314,28 +319,44 @@ public:
     loading_done = true;
     tex_a = (vsx_module_param_texture*)in_parameters.create(VSX_MODULE_PARAM_ID_TEXTURE,"tex_a");
     mesh_in = (vsx_module_param_mesh*)in_parameters.create(VSX_MODULE_PARAM_ID_MESH,"mesh_in");
+    particle_cloud = (vsx_module_param_mesh*)in_parameters.create(VSX_MODULE_PARAM_ID_MESH,"particle_cloud");
+
     vertex_colors = (vsx_module_param_int*)in_parameters.create(VSX_MODULE_PARAM_ID_INT,"vertex_colors");
     vertex_colors->set(0);
-    use_display_list = (vsx_module_param_int*)in_parameters.create(VSX_MODULE_PARAM_ID_INT,"use_display_list");
-    use_display_list->set(0);
+
     use_vertex_colors = (vsx_module_param_int*)in_parameters.create(VSX_MODULE_PARAM_ID_INT,"use_vertex_colors");
     use_vertex_colors->set(1);
+
+    use_display_list = (vsx_module_param_int*)in_parameters.create(VSX_MODULE_PARAM_ID_INT,"use_display_list");
+    use_display_list->set(0);    
+
+
+    particles_size_center = (vsx_module_param_int*)in_parameters.create(VSX_MODULE_PARAM_ID_INT,"particles_size_center");
+    particles_size_center->set(0);
 
     ignore_uvs_in_vbo_updates = (vsx_module_param_int*)in_parameters.create(VSX_MODULE_PARAM_ID_INT,"ignore_uvs_in_vbo_updates");
     ignore_uvs_in_vbo_updates->set(0);
 
-    m_colors = true;
-    particles_size_center = (vsx_module_param_int*)in_parameters.create(VSX_MODULE_PARAM_ID_INT,"particles_size_center");
-    particles_size_center->set(0);
     particles_in = (vsx_module_param_particlesystem*)in_parameters.create(VSX_MODULE_PARAM_ID_PARTICLESYSTEM,"particles");
-    particle_cloud = (vsx_module_param_mesh*)in_parameters.create(VSX_MODULE_PARAM_ID_MESH,"particle_cloud");
 
     render_result = (vsx_module_param_render*)out_parameters.create(VSX_MODULE_PARAM_ID_RENDER,"render_out");
     render_result->set(0);
+
+    particle_mesh = 0x0;
+    mesh = 0x0;
+    ta = 0x0;
+
+    m_normals = false;
+    m_tex_coords = false;
+    m_colors = false;
+
+    particles = 0x0;
+
     prev_mesh_timestamp = 0xFFFFFF;
 
     // init variables
     // vbo index offsets
+
     offset_normals = 0;
     offset_vertices = 0;
     offset_texcoords = 0;
@@ -348,12 +369,19 @@ public:
     current_num_vertices = 0;
     current_num_faces = 0;
 
+    // vbo handles
     vbo_id_vertex_normals_texcoords = 0;
     vbo_id_draw_indices = 0;
+
+    current_vbo_draw_type = 0;
+
+    current_num_vertices = 0;
+    current_num_faces = 0;
+
     num_uploads = 0;
   }
 
-  void inline enable_texture()
+  void  enable_texture()
   {
     ta = tex_a->get_addr();
     if (ta)
@@ -369,7 +397,7 @@ public:
     }
   }
 
-  void inline disable_texture()
+  void  disable_texture()
   {
     if (ta)
     {
@@ -379,7 +407,7 @@ public:
     }
   }
 
-  void inline enable_client_arrays_no_vbo()
+  void  enable_client_arrays_no_vbo()
   {
     // reset presence values
     m_colors = false;
@@ -414,7 +442,7 @@ public:
   }
 
 
-  bool inline enable_client_arrays_vbo()
+  bool enable_client_arrays_vbo()
   {
     // reset presence values
     m_colors = false;
@@ -492,7 +520,7 @@ public:
   }
 
 
-  void inline disable_client_arrays_no_vbo()
+  void disable_client_arrays_no_vbo()
   {
     glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -509,7 +537,7 @@ public:
     }
   }
 
-  void inline disable_client_arrays_vbo()
+  void disable_client_arrays_vbo()
   {
     glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -531,16 +559,31 @@ public:
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
   }
 
-  void inline perform_draw()
+  void perform_draw()
   {
-    printf("drawing\n");
+    /*for (size_t i = 0; i < (*mesh)->data->faces.get_used(); i++)
+    {
+      vsx_vector a = (*mesh)->data->vertices[ (*mesh)->data->faces[i].a ];
+      vsx_vector b = (*mesh)->data->vertices[ (*mesh)->data->faces[i].b ];
+      vsx_vector c = (*mesh)->data->vertices[ (*mesh)->data->faces[i].c ];
+      printf(" mesh data v : %f %f %f; %f %f %f; %f %f %f  ", a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+      a = (*mesh)->data->vertex_normals[ (*mesh)->data->faces[i].a ];
+      b = (*mesh)->data->vertex_normals[ (*mesh)->data->faces[i].b ];
+      c = (*mesh)->data->vertex_normals[ (*mesh)->data->faces[i].c ];
+      printf(" mesh data vn: %f %f %f; %f %f %f; %f %f %f  ", a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+      vsx_tex_coord ta = (*mesh)->data->vertex_tex_coords[ (*mesh)->data->faces[i].a ];
+      vsx_tex_coord tb = (*mesh)->data->vertex_tex_coords[ (*mesh)->data->faces[i].b ];
+      vsx_tex_coord tc = (*mesh)->data->vertex_tex_coords[ (*mesh)->data->faces[i].c ];
+      printf(" mesh data vt: %f %f ;  %f %f;  %f %f", ta.s, ta.t, tb.s, tb.t, tc.s, tc.t);
+    }*/
+    printf("drawing %d faces\n", (*mesh)->data->faces.get_used());
     //glDrawElements(GL_TRIANGLES,(*mesh)->data->faces.get_used()*3,GL_UNSIGNED_INT,(*mesh)->data->faces.get_pointer());
     //size_t face_count = (*mesh)->data->faces.get_used();
     glDrawElements(GL_TRIANGLES,(*mesh)->data->faces.get_used()*3,GL_UNSIGNED_INT,0);
     //glDrawElements(GL_TRIANGLES, face_count * 3, GL_UNSIGNED_INT, 0);
   }
 
-  void inline cleanup_successful_rendering()
+  void cleanup_successful_rendering()
   {
     disable_client_arrays_vbo();
     disable_texture();
@@ -550,7 +593,7 @@ public:
     render_result->set(1);
   }
 
-  void inline output_opengl_es(vsx_module_param_abs* param)
+  void output_opengl_es(vsx_module_param_abs* param)
   {
     mesh = mesh_in->get_addr();
     // sanity checks
@@ -659,7 +702,7 @@ public:
     #endif
     GLuint gl_error = glGetError();
     printf("output %d\n", __LINE__);
-    if (!mesh_in->valid) return;
+    //if (!mesh_in->valid) return;
     mesh = mesh_in->get_addr();
     printf("output %d\n", __LINE__);
     // sanity checks
@@ -728,6 +771,7 @@ public:
       enable_client_arrays_vbo();
       float ss;
       glMatrixMode(GL_MODELVIEW);
+      printf("output %d\n", __LINE__);
 
       for (unsigned long i = 0; i < particles->particles->size(); ++i)
       {
@@ -770,9 +814,17 @@ public:
             ss
           );
         }
+        printf("output %d\n", __LINE__);
+
         perform_draw();
+        printf("output %d\n", __LINE__);
+
         glPopMatrix();
+        printf("output %d\n", __LINE__);
+
       } // for (unsigned long i = 0; i < particles->particles->size(); ++i)
+      printf("output %d\n", __LINE__);
+
       cleanup_successful_rendering();
       return;
     }
