@@ -1,5 +1,7 @@
-#define HANDLE_GL_ERROR handle_gl_error(__FILE__,__LINE__)
+#define HANDLE_GL_ERROR true
+//handle_gl_error(__FILE__,__LINE__)
 
+#define printf
 
 class vsx_module_render_mesh : public vsx_module
 {
