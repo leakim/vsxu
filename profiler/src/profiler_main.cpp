@@ -340,11 +340,13 @@ int main(int argc, char* argv[])
     }
   }
 
+#if 0
   int display_gpu_vram_stats = 0;
   if (vsx_argvector::get_instance()->has_param("gl_vram"))
   {
     display_gpu_vram_stats = 1;
   }
+#endif
 
 
   sprintf( titlestr, "Vovoid VSXu Profiler %s [GNU/Linux %d-bit]", vsxu_ver, PLATFORM_BITS);
