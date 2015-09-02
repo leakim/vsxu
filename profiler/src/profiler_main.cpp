@@ -355,7 +355,6 @@ int main(int argc, char* argv[])
 
 
   vsx_timer frame_delay;
-  int initial_vram_free = 0;
   while( running )
   {
     profiler->maj_begin();
