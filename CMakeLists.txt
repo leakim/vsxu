@@ -187,6 +187,9 @@ if(VSXU_DEBUG)
   )
 else(VSXU_DEBUG)
   if (OPTIMIZATION_FLAGS EQUAL 1)
+     if(UNIX)
+       add_subdirectory( -fno-delayed-branch )
+     endif(UNIX)
     add_definitions(
       -DVSX_OPTIMIZATIONS=1
       -mtune=nocona
@@ -195,7 +198,6 @@ else(VSXU_DEBUG)
       -O3
       -fno-thread-jumps 
       -fno-if-conversion2 
-      -fno-delayed-branch 
       -fno-loop-optimize 
       -ftree-dce 
       -ftree-sra 
@@ -235,6 +237,9 @@ else(VSXU_DEBUG)
     )
   else (OPTIMIZATION_FLAGS EQUAL 1)
     if (VSXU_BUILD_WINDOWS_32)
+        if(UNIX)
+          add_subdirectory( -fno-delayed-branch )
+        endif(UNIX)
         add_definitions(
 #from O1
           -fauto-inc-dec
@@ -242,7 +247,6 @@ else(VSXU_DEBUG)
           -fcprop-registers
           -fdce
           -fdefer-pop
-          -fdelayed-branch
           -fdse
           -fguess-branch-probability
           -fif-conversion2
@@ -308,6 +312,9 @@ else(VSXU_DEBUG)
           -ffast-math
         )
     elseif(VSXU_BUILD_WINDOWS_64)
+        if(UNIX)
+          add_subdirectory( -fno-delayed-branch )
+        endif(UNIX)
         add_definitions(
 #from O1
           -fauto-inc-dec
@@ -315,7 +322,6 @@ else(VSXU_DEBUG)
           -fcprop-registers
           -fdce
           -fdefer-pop
-          -fdelayed-branch
           -fdse
           -fguess-branch-probability
           -fif-conversion2
