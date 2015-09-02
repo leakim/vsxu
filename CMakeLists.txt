@@ -156,6 +156,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x" )
 # C++14: set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive" )
 
+add_definitions( -Wall -Wno-sign-compare)
+if (UNIX)
+  add_definitions( -Werror ) # no reason for linux not to compile
+endif()
 
 if (VSXU_STATIC EQUAL 1)
   add_definitions(-g)
@@ -172,18 +176,7 @@ if(VSXU_DEBUG)
   message("All warnings are enabled")
   add_definitions(
     -g
-    -Wall
-	-Werror=return-type
-	-Werror=unused-parameter
-	#-Weffc++
-	#-Wdouble-promotion
     -mtune=nocona
-    -Wtype-limits
-    -fpermissive
-    -Wuninitialized
-    -Wignored-qualifiers
-    -Wempty-body
-    -Wunused-parameter
   )
 else(VSXU_DEBUG)
   if (OPTIMIZATION_FLAGS EQUAL 1)
@@ -308,7 +301,7 @@ else(VSXU_DEBUG)
 #general
           -mtune=nocona
           -fmessage-length=0
-          -fpermissive
+          #-fpermissive
           -ffast-math
         )
     elseif(VSXU_BUILD_WINDOWS_64)
@@ -383,7 +376,7 @@ else(VSXU_DEBUG)
 #general
           -mtune=nocona
           -fmessage-length=0
-          -fpermissive
+          #-fpermissive
           -ffast-math
         )
     else()
@@ -391,7 +384,7 @@ else(VSXU_DEBUG)
           -O3
           -mtune=nocona
           -fmessage-length=0
-          -fpermissive
+          #-fpermissive
           -finline-functions
           -ffast-math
         )

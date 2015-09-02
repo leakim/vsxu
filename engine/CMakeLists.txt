@@ -40,6 +40,10 @@ file(GLOB_RECURSE HEADER_FILES *.h)
 #  -DVSXS_DEBUG=1
 # )
 
+add_definitions( -Wno-parentheses ) # LZMA
+#add_definitions( -Wno-int-to-pointer-cast ) # vsxfst WIN64
+add_definitions( -Wno-error -fpermissive ) # vsxfst WIN64
+
 add_definitions(
    # -DBUILDING_DLL
  -DVSXU_MODULE_TIMING
