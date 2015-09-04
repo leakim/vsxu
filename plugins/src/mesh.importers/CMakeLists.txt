@@ -9,7 +9,11 @@ message("configuring vsxu module            " ${module_id})
 # set defines for MOD_CM, MOD_DM, MOD_NM
 CREATE_STATIC_GLUE(${module_id})
 
-add_definitions(-DCAL3D_EXPORTS -fPIC)
+add_definitions(-DCAL3D_EXPORTS)
+if(UNIX)
+  add_definitions( -fPIC )
+endif(UNIX)
+
 include_directories(cal3d/cal3d/src)
 
 # find the local source files
