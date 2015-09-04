@@ -155,6 +155,12 @@ INCLUDE(CPack)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x" )
 # C++14: set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 
+add_definitions( -Wall -Wno-sign-compare)
+#if (UNIX)
+#  add_definitions( -Werror ) # no reason for linux not to compile
+#endif()
+add_definitions( -Wno-error=delete-non-virtual-dtor ) # FIXME
+
 if (VSXU_STATIC EQUAL 1)
   add_definitions(-g)
   add_definitions(-DVSXU_STATIC)
