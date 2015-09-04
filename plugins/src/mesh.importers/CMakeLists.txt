@@ -13,6 +13,15 @@ add_definitions(-DCAL3D_EXPORTS)
 if(UNIX)
   add_definitions( -fPIC )
 endif(UNIX)
+add_definitions(
+   -Wno-error=narrowing
+   -Wno-error=vla
+   -Wno-error=parentheses
+   -Wno-error=unused-but-set-variable
+   #-----------------------------------
+   -Wno-error=return-local-addr # FIXME
+   -Wno-error=unknown-pragmas   # FIXME
+   )
 
 include_directories(cal3d/cal3d/src)
 
