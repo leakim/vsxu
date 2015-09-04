@@ -183,12 +183,12 @@ if(VSXU_DEBUG)
 	#-Wdouble-promotion
     -mtune=nocona
     -Wtype-limits
-    -fpermissive
     -Wuninitialized
     -Wignored-qualifiers
     -Wempty-body
     -Wunused-parameter
   )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive " )
 else(VSXU_DEBUG)
   if (OPTIMIZATION_FLAGS EQUAL 1)
     if(UNIX)
@@ -312,9 +312,9 @@ else(VSXU_DEBUG)
 #general
           -mtune=nocona
           -fmessage-length=0
-          -fpermissive
           -ffast-math
         )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive " )
     elseif(VSXU_BUILD_WINDOWS_64)
         add_definitions(
 #from O1
@@ -384,18 +384,18 @@ else(VSXU_DEBUG)
 #general
           -mtune=nocona
           -fmessage-length=0
-          -fpermissive
           -ffast-math
         )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive " )
     else()
         add_definitions(
           -O3
           -mtune=nocona
           -fmessage-length=0
-          -fpermissive
           -finline-functions
           -ffast-math
         )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive " )
     endif()
   endif (OPTIMIZATION_FLAGS EQUAL 1)
 endif(VSXU_DEBUG)
