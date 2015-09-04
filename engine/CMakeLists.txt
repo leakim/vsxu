@@ -218,3 +218,8 @@ endif()
 target_link_libraries(${module_id}
   ${DL_LIBRARY}
 )
+
+add_definitions( -Wno-parentheses ) # LZMA
+#if (WIN32)
+  add_definitions( -Wno-error=int-to-pointer-cast ) # FIXME
+#endif()
